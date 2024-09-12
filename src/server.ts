@@ -9,7 +9,7 @@ const startServer = async () => {
         app.listen(envConfig.port, () => {
             console.log(`Server started on port ${envConfig.port}`);
         });
-        seedUsers();
+        //seedUsers();
     } catch (error) {
         console.log("Error starting server: ", error);
         process.exit(1);
