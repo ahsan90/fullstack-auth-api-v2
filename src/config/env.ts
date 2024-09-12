@@ -15,6 +15,8 @@ const envVarsSchema = Joi.object({
   MAIL_USER: Joi.string().required(),
   MAIL_PASSWORD: Joi.string().required(),
   MAIL_FROM: Joi.string().required(),
+
+  FRONTEND_URL: Joi.string().required(),
 }).unknown();
 
 const { error, value: envVars } = envVarsSchema.validate(process.env);
@@ -37,6 +39,7 @@ const envConfig = {
   mailUser: envVars.MAIL_USER,
   mailPassword: envVars.MAIL_PASSWORD,
   mailFrom: envVars.MAIL_FROM,
+  frontendUrl: envVars.FRONTEND_URL,
 };
 
 export default envConfig;
