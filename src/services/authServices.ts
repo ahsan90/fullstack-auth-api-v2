@@ -10,7 +10,6 @@ import {
   sendPasswordResetLinkEmail,
   sendResetConfirmationEmail,
 } from "./mailServices";
-import clientUrl from "../utils/clientUrl";
 
 export const loginUser = async ({
   email,
@@ -93,7 +92,7 @@ export const requestResetPassword = async (email: string) => {
       passwordResetTokenExpires: resetTokenExpirsAt,
     },
   });
-  const resetUrl = `${clientUrl}/reset-password/${resetToken}/${user.id}`;
+  const resetUrl = `${envConfig.frontendUrl}/reset-password/${resetToken}/${user.id}`;
   try {
     await sendPasswordResetLinkEmail(user.email, resetUrl);
     return {
