@@ -13,7 +13,7 @@ const startServer = async () => {
         app_1.default.listen(env_1.default.port, () => {
             console.log(`Server started on port ${env_1.default.port}`);
         });
-        (0, data_1.seedUsers)();
+        await (0, data_1.seedUsers)();
     }
     catch (error) {
         console.log("Error starting server: ", error);
