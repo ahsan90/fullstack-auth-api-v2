@@ -48,10 +48,12 @@ const getCurrentUser = async (req, res, next) => {
         const user = req.user;
         if (user instanceof Object && "id" in user) {
             const existingUser = await db_1.default.user.findUnique({ where: { id: user.id }, select: {
+                    id: true,
                     email: true,
                     name: true,
                     createdAt: true,
                     updatedAt: true,
+                    role: true,
                 } });
             if (existingUser) {
                 return res.status(200).json({ user: existingUser });
@@ -79,7 +81,7 @@ const updateUser = async (req, res, next) => {
         }
     }
     catch (error) {
-        next((0, errorMiddleware_1.createError)(error.message || "Something went wrong!", 500));
+        next((0, errorMiddleware_1.createError)(error.message || "Something went wrong!", error.statusCode));
     }
 };
 exports.updateUser = updateUser;

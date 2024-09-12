@@ -13,4 +13,7 @@ function extractTokens(tokenString) {
     // Return the tokens as an object
     return { accessToken, refreshToken };
 }
+const extractAccessToken = (tokenString) => {
+    return tokenString.split("=")[1];
+};
 exports.default = extractTokens;

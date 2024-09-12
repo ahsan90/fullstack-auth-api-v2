@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.refreshAccessToken = exports.validateResetToken = exports.resetPassword = exports.requestResetPassword = exports.loginUser = void 0;
-const client_1 = require("@prisma/client");
 const db_1 = __importDefault(require("../config/db"));
 const errorMiddleware_1 = require("../middlewares/errorMiddleware");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -16,10 +15,15 @@ const loginUser = async ({ email, password, }) => {
     const existingUser = await db_1.default.user.findUnique({
         where: { email },
     });
-    if (existingUser?.accountInitiatedWith === client_1.AccountInitiatedWith.GOOGLE &&
-        existingUser?.password === null) {
-        throw (0, errorMiddleware_1.createError)("The Email is used to login with Google. Please login with Google or reset/update password to continue!", 400);
-    }
+    // if (
+    //   existingUser?.accountInitiatedWith === AccountInitiatedWith.GOOGLE &&
+    //   existingUser?.password === null
+    // ) {
+    //   throw createError(
+    //     "The Email is used to login with Google. Please login with Google or reset/update password to continue!",
+    //     400
+    //   );
+    // }
     if (existingUser &&
         (await bcryptjs_1.default.compare(password, existingUser?.password))) {
         const jwtPayload = {

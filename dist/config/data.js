@@ -6,11 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.seedUsers = void 0;
 const client_1 = require("@prisma/client");
 const db_1 = __importDefault(require("../config/db"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const users = [
     {
         name: "Codehouse Lab",
-        email: "codehouselab@example.com",
-        password: "test1234",
+        email: "codehouselab@gmail.com",
+        password: "112233",
         role: client_1.Role.ADMIN,
     },
     {
@@ -33,7 +34,10 @@ const seedUsers = async () => {
         });
         if (!existingUser) {
             await db_1.default.user.create({
-                data: user,
+                data: {
+                    ...user,
+                    password: await bcryptjs_1.default.hash(user.password, 10),
+                },
             });
         }
     }

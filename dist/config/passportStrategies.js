@@ -12,13 +12,9 @@ const extractTokens_1 = __importDefault(require("../utils/extractTokens"));
 const cookieExtractor = (req) => {
     let token = null;
     let isAccessToken = false;
-    //console.log(req.headers.cookie?.split("; "));
-    //console.log('header token: ',req.headers.cookie);
     if (!req.headers.cookie)
         return { token, isAccessToken };
     const tokens = (0, extractTokens_1.default)(req.headers.cookie);
-    //console.log("tokens: ", tokens.accessToken, tokens.refreshToken);
-    console.log(req.path);
     if (req && req.headers.cookie) {
         if (tokens.accessToken && req.path === "/logout") {
             token = tokens.accessToken;
@@ -30,30 +26,17 @@ const cookieExtractor = (req) => {
         }
         else if (tokens.accessToken &&
             req.path !== "/refresh-access-token") {
-            //console.log("Validating with access token: ", req.cookies["accessToken"]);
             token = tokens.accessToken;
             isAccessToken = true;
-            //console.log("isAccessToken from access: ", isAccessToken);
         }
         else if (tokens.refreshToken &&
             req.path === "/refresh-access-token") {
             console.log('should trigger refreshing token');
             console.log(req.path);
-            // console.log(
-            //   "Validating with refresh token: ",
-            //   req.cookies["refreshToken"]
-            // );
             token = tokens.refreshToken;
             isAccessToken = false;
-            //console.log("isAccessToken from refresh: ", isAccessToken);
         }
     }
-    // console.log(
-    //   "Token from cookie extractor: ",
-    //   token,
-    //   " | isAccessToken: ",
-    //   isAccessToken
-    // );
     return { token, isAccessToken };
 };
 const secretOrKeyProvider = (req, rawJwtToken, done) => {
@@ -74,10 +57,6 @@ passport_1.default.use(new passport_jwt_1.Strategy(options, async (req, jwtPaylo
     const { token, isAccessToken } = cookieExtractor(req);
     if (!token)
         return done(null, false);
-    //console.log("token: ", token, "isAccessToken: ", isAccessToken);
-    // const secretKey = isAccessToken
-    //   ? config.jwtSecret
-    //   : config.refreshTokenSecret;
     try {
         // Verify the token manually with the correct secret
         const secretKey = isAccessToken

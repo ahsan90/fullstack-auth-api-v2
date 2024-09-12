@@ -3,12 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.registerUser = void 0;
-const client_1 = require("@prisma/client");
+exports.updateUserById = exports.getAllUsers = exports.createUser = void 0;
 const db_1 = __importDefault(require("../config/db"));
 const errorMiddleware_1 = require("../middlewares/errorMiddleware");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const registerUser = async ({ name, email, password, }) => {
+const createUser = async ({ email, name, password, role, }) => {
     const existingUser = await db_1.default.user.findFirst({
         where: {
             email: {
@@ -26,6 +25,7 @@ const registerUser = async ({ name, email, password, }) => {
             name,
             email,
             password: hashedPassword,
+            role,
         },
         select: {
             id: true,
@@ -36,8 +36,21 @@ const registerUser = async ({ name, email, password, }) => {
     });
     return user;
 };
-exports.registerUser = registerUser;
-const updateUser = async (userId, data) => {
+exports.createUser = createUser;
+const getAllUsers = async () => {
+    return await db_1.default.user.findMany({
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+};
+exports.getAllUsers = getAllUsers;
+const updateUserById = async (userId, loggedInUser, data) => {
     const existingUser = await db_1.default.user.findUnique({
         where: { id: userId },
     });
@@ -49,6 +62,9 @@ const updateUser = async (userId, data) => {
     });
     if (isEmailUsedByAnotherUser)
         throw (0, errorMiddleware_1.createError)("Email already used by another user!", 400);
+    if (loggedInUser instanceof Object && loggedInUser.id === userId && existingUser.role !== data.role) {
+        throw (0, errorMiddleware_1.createError)("Admin is not allowed to change his/her own role!", 403);
+    }
     let updatedData;
     if (!data.newPassword ||
         data.newPassword === "" ||
@@ -57,17 +73,18 @@ const updateUser = async (userId, data) => {
         updatedData = {
             email: data.email,
             name: data.name,
+            role: data.role,
         };
     }
     else {
         if (existingUser &&
-            !(await bcryptjs_1.default.compare(data.currentPassword, existingUser.password))) {
-            throw (0, errorMiddleware_1.createError)("Your current password is incorrect!", 400);
-        }
+            !(await bcryptjs_1.default.compare(data.currentPassword, existingUser.password)))
+            throw (0, errorMiddleware_1.createError)("Your current password is incorrect", 400);
         updatedData = {
             email: data.email,
             name: data.name,
             password: await bcryptjs_1.default.hash(data.newPassword, 10),
+            role: data.role,
         };
     }
     return await db_1.default.user.update({
@@ -82,24 +99,4 @@ const updateUser = async (userId, data) => {
         },
     });
 };
-exports.updateUser = updateUser;
-const deleteUser = async (userId) => {
-    const user = await db_1.default.user.findUnique({
-        where: { id: userId },
-    });
-    if (!user)
-        throw (0, errorMiddleware_1.createError)("User not found", 404);
-    if (user.role === client_1.Role.ADMIN)
-        throw (0, errorMiddleware_1.createError)("Admin user is not allowed to delete his own account!", 400);
-    return await db_1.default.user.delete({
-        where: { id: userId },
-        select: {
-            id: true,
-            email: true,
-            name: true,
-            createdAt: true,
-            updatedAt: true,
-        },
-    });
-};
-exports.deleteUser = deleteUser;
+exports.updateUserById = updateUserById;
