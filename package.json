@@ -5,6 +5,7 @@
   "scripts": {
     "start": "tsc && node dist/server.js",
     "build": "npm install && npx prisma generate && tsc",
+    "vercel_prod": "node dist/server.js", 
     "dev": "nodemon"
   },
   "keywords": [],
