@@ -1,13 +1,4 @@
 {
-  "builds": [
-    {
-      "src": "./dist/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "buildCommand": "npx prisma generate && npm run vercel_prod"
-      }
-    }
-  ],
   "routes": [
     {
       "src": "/dist/(.*)",
