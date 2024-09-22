@@ -28,59 +28,81 @@ export const login = async (
       sameSite: "none",
       maxAge: decoder.decodeToken(refreshToken).exp! * 1000 - Date.now(),
     });
-    res
-      .status(200)
-      .json({ message: "User logged in successfully", user });
+    res.status(200).json({ message: "User logged in successfully", user });
   } catch (error: any) {
     next(error);
   }
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    if(req.user instanceof Object && "id" in req.user){
-        const currentUserId = req.user.id as string;
-        //await authServices.logoutUser(currentUserId);
-        res.clearCookie("accessToken");
-        res.clearCookie("refreshToken");
-        res.status(200).json({ message: "User logged out successfully" });
-    } else {
-        next(createError('Unauthorized!', 401));
-    }
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.status(200).json({ message: "User logged out successfully" });
+    // if(req.user instanceof Object && "id" in req.user){
+    //     const currentUserId = req.user.id as string;
+    //     //await authServices.logoutUser(currentUserId);
+    //     res.clearCookie("accessToken");
+    //     res.clearCookie("refreshToken");
+    //     res.status(200).json({ message: "User logged out successfully" });
+    // } else {
+    //     next(createError('Unauthorized!', 401));
+    // }
   } catch (error: any) {
     next(error);
   }
-}
+};
 
-export const requestPasswordReset = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { message, resetToken, email } = await authServices.requestResetPassword(req.body.email);
-        return res.status(200).json({ message, resetToken, email });
-    } catch (error: any) {
-        //console.log(error.statusCode);
-        next(createError(error.message, error.statusCode));
-    }
-}
+export const requestPasswordReset = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { message, resetToken, email } =
+      await authServices.requestResetPassword(req.body.email);
+    return res.status(200).json({ message, resetToken, email });
+  } catch (error: any) {
+    //console.log(error.statusCode);
+    next(createError(error.message, error.statusCode));
+  }
+};
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { message } = await authServices.resetPassword(req.body);
-        return res.status(200).json({ message });
-    } catch (error: any) {
-        next(createError(error.message, error.statusCode));
-    }
-}
+export const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { message } = await authServices.resetPassword(req.body);
+    return res.status(200).json({ message });
+  } catch (error: any) {
+    next(createError(error.message, error.statusCode));
+  }
+};
 
-export const varifyResetToken = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if(!req.body.resetToken && !req.body.userId) throw createError("Reset token is required", 400);
-        const { resetToken, userId } = req.body;
-        const { isValid } = await authServices.validateResetToken(resetToken, userId);
-        return res.status(200).json({ isValid });
-    } catch (error: any) {
-        next(createError(error.message, error.statusCode));
-    }
-}
+export const varifyResetToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.body.resetToken && !req.body.userId)
+      throw createError("Reset token is required", 400);
+    const { resetToken, userId } = req.body;
+    const { isValid } = await authServices.validateResetToken(
+      resetToken,
+      userId
+    );
+    return res.status(200).json({ isValid });
+  } catch (error: any) {
+    next(createError(error.message, error.statusCode));
+  }
+};
 
 export const refreshAccessToken = async (
   req: Request,
@@ -106,13 +128,11 @@ export const refreshAccessToken = async (
       sameSite: "none",
       maxAge: decoder.decodeToken(refreshToken).exp! * 1000 - Date.now(),
     });
-    res
-      .status(200)
-      .json({
-        message: "Access token refreshed successfully",
-        // accessToken,
-        // refreshToken,
-      });
+    res.status(200).json({
+      message: "Access token refreshed successfully",
+      // accessToken,
+      // refreshToken,
+    });
   } catch (error: any) {
     next(createError(error.message || error.response || error, 400));
   }

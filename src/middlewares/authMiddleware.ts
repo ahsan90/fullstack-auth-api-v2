@@ -3,13 +3,13 @@ import envConfig from "../config/env";
 import passport from "passport";
 import "../config/passportStrategies";
 import { createError } from "../middlewares/errorMiddleware";
-import { Role } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 
 const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate(
       "jwt",
       { session: false },
-      (err: any, user: any) => {
+      (err: Error, user: Partial<User>) => {
         if (err) {
           return next(err);
         }

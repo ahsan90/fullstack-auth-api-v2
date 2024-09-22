@@ -5,7 +5,10 @@ export const validateRegisterUser = (req: Request, res: Response, next: NextFunc
     const schema = Joi.object({
       name: Joi.string().required(),
       email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
+      password: Joi.string().min(6).required().messages({
+        "string.empty": "Password is required",
+        "string.min": "Password must be at least 6 characters long!",
+      }),
     });
     const { error } = schema.validate(req.body);
     if (error) {

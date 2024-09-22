@@ -1,10 +1,10 @@
 import passport from "passport";
 import { Request } from "express";
 import {
-    Strategy as JwtStrategy,
-    ExtractJwt,
-    StrategyOptions,
-    VerifiedCallback,
+  Strategy as JwtStrategy,
+  ExtractJwt,
+  StrategyOptions,
+  VerifiedCallback,
 } from "passport-jwt";
 import db from "./db";
 import envConfig from "./env";
@@ -12,36 +12,34 @@ import jwt from "jsonwebtoken";
 import extractTokens from "../utils/extractTokens";
 
 interface ExtractedJwtToken {
-    token: string | null;
-    isAccessToken: boolean | false;
+  token: string | null;
+  isAccessToken: boolean | false;
 }
 
 const cookieExtractor = (req: Request): ExtractedJwtToken => {
   let token: string | null = null;
   let isAccessToken: boolean | false = false;
 
-  if(!req.headers.cookie) return { token, isAccessToken };
+  if (!req.headers.cookie) return { token, isAccessToken };
   const tokens = extractTokens(req.headers.cookie!);
 
   if (req && req.headers.cookie) {
-    if (tokens.accessToken && req.path === "/logout") {
+    // if (tokens.accessToken && req.path === "/logout") {
+    //   token = tokens.accessToken;
+    //   isAccessToken = true;
+    // } else if (tokens.refreshToken && req.path === "/logout") {
+    //   token = tokens.refreshToken;
+    //   isAccessToken = false;
+    // } else if (
+    //   tokens.accessToken &&
+    //   req.path !== "/refresh-access-token"
+    // )
+    if (tokens.accessToken && req.path !== "/refresh-access-token") {
       token = tokens.accessToken;
       isAccessToken = true;
-    } else if (tokens.refreshToken && req.path === "/logout") {
-      token = tokens.refreshToken;
-      isAccessToken = false;
-    } else if (
-      tokens.accessToken &&
-      req.path !== "/refresh-access-token"
-    ) {
-      token = tokens.accessToken;
-      isAccessToken = true;
-    } else if (
-      tokens.refreshToken &&
-      req.path === "/refresh-access-token"
-    ) {
-      console.log('should trigger refreshing token')
-      console.log(req.path)
+    } else if (tokens.refreshToken && req.path === "/refresh-access-token") {
+      console.log("should trigger refreshing token");
+      console.log(req.path);
       token = tokens.refreshToken;
       isAccessToken = false;
     }
@@ -88,8 +86,6 @@ passport.use(
           email: true,
           name: true,
           role: true,
-          createdAt: true,
-          updatedAt: true,
         },
       });
 
@@ -105,11 +101,11 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-    console.log("serializeUser: ", user);
+  console.log("serializeUser: ", user);
   done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
-    console.log("deserializeUser: ", user);
+  console.log("deserializeUser: ", user);
   done(null, user as any);
 });
