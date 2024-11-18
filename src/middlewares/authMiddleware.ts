@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import envConfig from "../config/env";
 import passport from "passport";
 import "../config/passportStrategies";
 import { createError } from "../middlewares/errorMiddleware";

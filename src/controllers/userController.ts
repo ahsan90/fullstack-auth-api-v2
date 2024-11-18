@@ -84,6 +84,6 @@ export const deleteUser = async (
       next(createError("Unauthorized!", 401));
     }
   } catch (error: any) {
-    next(createError(error.message || "Something went wrong!", 500));
+    next(createError(error.message || "Something went wrong!", error.statusCode));
   }
 };

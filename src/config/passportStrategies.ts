@@ -100,12 +100,12 @@ passport.use(
   })
 );
 
-passport.serializeUser((user, done) => {
-  console.log("serializeUser: ", user);
-  done(null, user);
-});
+// passport.serializeUser((user, done) => {
+//   console.log("serializeUser: ", user);
+//   done(null, user);
+// });
 
-passport.deserializeUser((user, done) => {
-  console.log("deserializeUser: ", user);
-  done(null, user as any);
-});
+// passport.deserializeUser((user, done) => {
+//   console.log("deserializeUser: ", user);
+//   done(null, user || false || null);
+// });

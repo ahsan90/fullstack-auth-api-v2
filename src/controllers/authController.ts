@@ -1,3 +1,4 @@
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from "express";
 import envConfig from "../config/env";
 import * as decoder from "../utils/decoder";
@@ -20,7 +21,8 @@ export const login = async (
       httpOnly: true,
       secure: envConfig.env === "production",
       sameSite: "none",
-      maxAge: decoder.decodeToken(accessToken).exp! * 1000 - Date.now(),
+      maxAge: (jwt.decode(accessToken) as JwtPayload).exp! * 1000 - Date.now(),
+      //maxAge: decoder.decodeToken(accessToken).exp! * 1000 - Date.now(),
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -29,7 +31,7 @@ export const login = async (
       maxAge: decoder.decodeToken(refreshToken).exp! * 1000 - Date.now(),
     });
     res.status(200).json({ message: "User logged in successfully", user });
-  } catch (error: any) {
+  } catch (error) {
     next(error);
   }
 };

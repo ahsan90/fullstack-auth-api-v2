@@ -22,15 +22,6 @@ export const loginUser = async ({
   const existingUser = await db.user.findUnique({
     where: { email },
   });
-  // if (
-  //   existingUser?.accountInitiatedWith === AccountInitiatedWith.GOOGLE &&
-  //   existingUser?.password === null
-  // ) {
-  //   throw createError(
-  //     "The Email is used to login with Google. Please login with Google or reset/update password to continue!",
-  //     400
-  //   );
-  // }
   if (
     existingUser &&
     (await bcrypt.compare(password, existingUser?.password!))
